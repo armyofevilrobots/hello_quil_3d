@@ -1,15 +1,20 @@
 <html>
 <head>
-<script type="text/javascript" src="/js/processing.min.js" ></script>
+<script type="text/javascript" src="/js/processing.js" ></script>
 <script type="text/javascript" src="/js/hello_quil_3d.js" ></script>
+<script type="text/javascript">
+var host_ip="{{req.headers.host}}";
+var server_ip="{{ip}}";
+</script>
 </head>
 <body>
-foo from a template! {{ip}}
+<!--foo from a template! {{ip}}-->
 <br/>
-My host header: {{req.headers.host}}
+Proxy: {{req.headers.host}}
+Server: {{ip}}
 <br/>
 <canvas id="helloquilcanvas" />
 <br/>
-My request was {{req}} btw.
+<!--My request was {{req}} btw.-->
 </body>
 </html>

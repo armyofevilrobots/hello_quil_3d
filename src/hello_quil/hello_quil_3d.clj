@@ -2,10 +2,17 @@
   ;(:gen-class)
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
+            [hello-quil.cljsdetect :as cd]
             ))
 
 (def ROTPERSEC 1.0)
 (def TOL 0.0001)
+
+
+(defn img-loc [img]
+  (if (cd/is-cljs?)
+    (str "img/" img)
+    (str "resources/public/img/" img)))
 
 (defn setup 
   "This is a docstring I guess."
@@ -18,18 +25,21 @@
      :y (/ (q/height) 2)
      :z 0.0
      :throb 0.0
-     :texture (q/load-image "img/earth_texture_web.jpg") } ))
+     :fps 120.0
+     :texture (q/load-image (img-loc "earth_texture_web.jpg")) } ))
 
 (defn update 
   "Functional update of the state, done per frame"
   [state]
-  (assoc state :throb 
+  (assoc state 
+         :throb 
          (let [newthrob (+ (:throb state) 
                            (/ (* 2 Math/PI) 
                               (* (q/current-frame-rate) ROTPERSEC)))]
            (if (> (* 2 Math/PI) (:throb state))
              newthrob
              (- newthrob (* 2 Math/PI))))
+         :fps (q/current-frame-rate)
          ))
 
 
@@ -89,9 +99,14 @@
     ;(q/vertex    0,    0,  100 4096 4096)
 
     (q/end-shape :close)
-    ;(q/stroke 128 0 0)
-    ;(q/fill 128 0 0)
-    ;(q/text (str ":throb " (:throb state)) 0 0 50)
+    (q/stroke 128 0 0)
+    (q/fill 128 0 0)
+    (q/text-align :center :center)
+    (q/text (str "FPS " (subs (str (:fps state)) 0 5) 
+            (if (cd/is-cljs?) 
+              (str "\nNginxProxy: " js/host_ip 
+                   "\nJettySrv: " js/server_ip)
+              "\nclojure-jvm")) 0 -100 0)
   )
 )
 
